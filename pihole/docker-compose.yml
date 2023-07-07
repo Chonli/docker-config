@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    hostname: pi.hole
+    networks:
+        qnet-static:
+            ipv4_address: 192.168.2.151
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      TZ: 'France/Paris'
+    # Volumes store your data between container upgrades
+    volumes:
+      - './etc-pihole/:/etc/pihole/'
+      - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    
+
+networks:
+    qnet-static:
+        driver: qnet
+        driver_opts:
+            iface: "eth0"
+        ipam:
+          driver: qnet
+          options:
+            iface: "eth0"
+          config:
+            - subnet: 192.168.2.0/24
+              gateway: 192.168.2.1

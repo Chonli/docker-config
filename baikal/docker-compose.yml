@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+    baikal:
+        image: ckulka/baikal:nginx
+        restart: always
+        networks:
+            qnet-static:
+                ipv4_address: 192.168.2.152
+        ports:
+          - "80:80"
+        volumes:
+          - ./config:/var/www/baikal/config
+          - ./Specific:/var/www/baikal/Specific
+          
+
+networks:
+    qnet-static:
+        driver: qnet
+        driver_opts:
+            iface: "eth0"
+        ipam:
+          driver: qnet
+          options:
+            iface: "eth0"
+          config:
+            - subnet: 192.168.2.0/24
+              gateway: 192.168.2.1
